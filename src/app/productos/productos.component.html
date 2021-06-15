@@ -1,0 +1,41 @@
+
+<form>
+  <div class="form-group form-inline">
+      Ingrese Producto: <input class="form-control ml-2" type="text" name="searchTerm" [(ngModel)]="service.searchTerm"/>
+      <span class="ml-3" *ngIf="service.loading$ | async">Cargando...</span>
+  </div>
+
+  <table class="table table-striped">
+    <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col" sortable="name" (sort)="onSort($event)">Producto</th>
+      <th scope="col" sortable="area" (sort)="onSort($event)">Precio Compra</th>
+      <th scope="col" sortable="population" (sort)="onSort($event)">Precio Venta</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let product of productos$ | async">
+      <th scope="row">{{ product.cod_producto }}</th>
+      <td>
+        <ngb-highlight [result]="product.descripcion" [term]="service.searchTerm"></ngb-highlight>
+      </td>
+      <td><ngb-highlight [result]="product.precio_cosecha | number" [term]="service.searchTerm"></ngb-highlight></td>
+      <td><ngb-highlight [result]="product.precio_venta | number" [term]="service.searchTerm"></ngb-highlight></td>
+    </tr>
+    </tbody>
+  </table>
+
+  <div class="d-flex justify-content-between p-2">
+    <ngb-pagination
+      [collectionSize]="(total$ | async)!" [(page)]="service.page" [pageSize]="service.pageSize">
+    </ngb-pagination>
+
+    <select class="custom-select" style="width: auto" name="pageSize" [(ngModel)]="service.pageSize">
+      <option [ngValue]="2">2 items por pág.</option>
+      <option [ngValue]="4">4 items por pág.</option>
+      <option [ngValue]="6">6 items por pág.</option>
+    </select>
+  </div>
+
+</form>
