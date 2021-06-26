@@ -1,11 +1,16 @@
 import { Injectable, PipeTransform } from '@angular/core';
 import {BehaviorSubject, Observable, of, Subject} from 'rxjs';
+import { map,catchError } from 'rxjs/operators';
+import { HttpClient,HttpHeaders } from '@angular/common/http';
+import { baseURL } from '../environments/baseurl';
 
 import {Producto} from '../model/producto';
 import {PRODUCTOS} from '../Datos/productos';
 import {DecimalPipe} from '@angular/common';
 import {debounceTime, delay, switchMap, tap} from 'rxjs/operators';
 import {SortColumn, SortDirection} from '../tables/sortable.directive';
+import { ProcessHTTPMsgService } from './process-httpmsg.service';
+
 
 interface SearchResult {
   productos: Producto[];
@@ -41,6 +46,13 @@ function matches(product: Producto, term: string, pipe: PipeTransform) {
 
 @Injectable({providedIn: 'root'})
 export class ProductService {
+  myApiUrl!: string;
+  httpOptions = {
+    headers: new HttpHeaders({
+      'Content-Type': 'application/json; charset=utf-8'
+    })
+  };
+
   private _loading$ = new BehaviorSubject<boolean>(true);
   private _search$ = new Subject<void>();
   private _productos$ = new BehaviorSubject<Producto[]>([]);
@@ -54,7 +66,10 @@ export class ProductService {
     sortDirection: ''
   };
 
-  constructor(private pipe: DecimalPipe) {
+  constructor(private pipe: DecimalPipe ,private http: HttpClient,
+    private processHTTPMsgService: ProcessHTTPMsgService) {
+
+    this.myApiUrl = '/productos/';
     this._search$.pipe(
       tap(() => this._loading$.next(true)),
       debounceTime(200),
@@ -68,6 +83,32 @@ export class ProductService {
 
     this._search$.next();
   }
+
+  getProducts(): Observable<Producto[]> {
+    return this.http.get<Producto[]>(baseURL + this.myApiUrl )
+    .pipe(catchError(this.processHTTPMsgService.handleError));
+  }
+
+  getProductById(id: number): Observable<Producto> {
+    return this.http.get<Producto>(baseURL + this.myApiUrl + id )
+    .pipe(catchError(this.processHTTPMsgService.handleError));
+  }
+
+  updateProduct(postId: number, product:Producto): Observable<Producto> {
+    return this.http.put<Producto>(baseURL+ this.myApiUrl + postId, JSON.stringify(product), this.httpOptions)
+      .pipe(catchError(this.processHTTPMsgService.handleError));
+  }
+
+  saveProduct(product: Producto): Observable<Producto> {
+    return this.http.post<Producto>(baseURL + this.myApiUrl ,  product, this.httpOptions)
+      .pipe(catchError(this.processHTTPMsgService.handleError));
+  }
+
+  deleteProduct(postId: number): Observable<Producto> {
+    return this.http.delete<Producto>(baseURL + this.myApiUrl + postId)
+     .pipe(catchError(this.processHTTPMsgService.handleError));
+  }
+
 
   get productos$() { return this._productos$.asObservable(); }
   get total$() { return this._total$.asObservable(); }
@@ -88,13 +129,14 @@ export class ProductService {
   }
 
   private _search(): Observable<SearchResult> {
+    
     const {sortColumn, sortDirection, pageSize, page, searchTerm} = this._state;
 
     // 1. sort
     let productos = sort(PRODUCTOS, sortColumn, sortDirection);
 
     // 2. filter
-    productos = productos.filter(country => matches(country, searchTerm, this.pipe));
+    productos = productos.filter(producto => matches(producto, searchTerm, this.pipe));
     const total = productos.length;
 
     // 3. paginate

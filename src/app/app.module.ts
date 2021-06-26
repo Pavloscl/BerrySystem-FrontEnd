@@ -3,7 +3,8 @@ import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AppRoutingModule } from './app-routing/app-routing.module';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 import {DecimalPipe} from '@angular/common';
 
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
@@ -11,6 +12,8 @@ import { HomeComponent } from './home/home.component';
 import { ProductosComponent } from './productos/productos.component';
 
 import{ProductService} from './services/product.service';
+import { baseURL } from './environments/baseurl';
+import { AddEditProductoComponent } from './productos/add-edit-producto/add-edit-producto.component';
 
 
 
@@ -19,19 +22,24 @@ import{ProductService} from './services/product.service';
     AppComponent,
     NavMenuComponent,
     HomeComponent,
-    ProductosComponent
+    ProductosComponent,
+    AddEditProductoComponent,
+   
   ],
+  entryComponents: [AddEditProductoComponent],
   imports: [
    
     BrowserModule,
     NgbModule,
     AppRoutingModule,
-    FormsModule
-
+    FormsModule,
+    ReactiveFormsModule,
+    HttpClientModule
   ],
   providers: [
     ProductService,
-    DecimalPipe
+    DecimalPipe,
+    {provide: 'baseURL', useValue: baseURL}
     
   ],
   bootstrap: [AppComponent]
