@@ -99,7 +99,7 @@ export class ProductService {
       .pipe(catchError(this.processHTTPMsgService.handleError));
   }
 
-  saveProduct(product: Producto): Observable<Producto> {
+  addProduct(product: Producto): Observable<Producto> {
     return this.http.post<Producto>(baseURL + this.myApiUrl ,  product, this.httpOptions)
       .pipe(catchError(this.processHTTPMsgService.handleError));
   }

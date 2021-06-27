@@ -6,14 +6,19 @@ import { AppRoutingModule } from './app-routing/app-routing.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import {DecimalPipe} from '@angular/common';
+import { baseURL } from './environments/baseurl'
 
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { HomeComponent } from './home/home.component';
+import { TrabajadorComponent } from './trabajador/trabajador.component';
 import { ProductosComponent } from './productos/productos.component';
-
-import{ProductService} from './services/product.service';
-import { baseURL } from './environments/baseurl';
 import { AddEditProductoComponent } from './productos/add-edit-producto/add-edit-producto.component';
+
+import{WorkService} from './services/work.service';
+import{ProductService} from './services/product.service';
+
+
+
 
 
 
@@ -24,6 +29,7 @@ import { AddEditProductoComponent } from './productos/add-edit-producto/add-edit
     HomeComponent,
     ProductosComponent,
     AddEditProductoComponent,
+    TrabajadorComponent,
    
   ],
   entryComponents: [AddEditProductoComponent],
@@ -39,7 +45,8 @@ import { AddEditProductoComponent } from './productos/add-edit-producto/add-edit
   providers: [
     ProductService,
     DecimalPipe,
-    {provide: 'baseURL', useValue: baseURL}
+    {provide: 'baseURL', useValue: baseURL},
+    WorkService
     
   ],
   bootstrap: [AppComponent]

@@ -37,16 +37,12 @@ export class AddEditProductoComponent implements OnInit {
     this.formPrecioCompra = 'precio_compra';
     this.formPrecioVenta = 'precio_venta';
 
-    this.editForm = this.formBuilder.group(
-      {
-        producto_desc: '',
-        precio_compra: '',
-        precio_venta: '',
-        precio_cosecha: '',
-      }
-    )
+    this.createForm();
   }
   ngOnInit(): void {
+
+   
+    
     if (this.postId > 0) {
       this.actionType = 'Edit';
       this.productService.getProductById(this.postId)
@@ -63,8 +59,26 @@ export class AddEditProductoComponent implements OnInit {
       this.editForm.controls['producto_desc'].disable();
     }
   }
+  get editFormData() { return this.editForm.controls; }
+
+createForm(){
+this.editForm = this.formBuilder.group(
+  {
+    producto_desc:['',[Validators.required]],
+    precio_compra: ['',[Validators.required]],
+    precio_venta:['',[Validators.required]],
+    precio_cosecha: ['',[Validators.required]]
+  }
+)}
+
 
   save() {
+
+    if (this.editForm.invalid || this.isLoading) {
+      return;
+    }
+    this.isLoading = true;
+
     if (this.actionType === 'Add') {
       console.log(this.actionType, this.postId)
       let producto: Producto = {
@@ -75,11 +89,12 @@ export class AddEditProductoComponent implements OnInit {
         precio_cosecha: this.editForm.get(this.formPrecioCosecha).value
 
       };
-      this.productService.saveProduct(producto)
+      this.productService.addProduct(producto)
         .subscribe((data) => {
           //this.router.navigate(['/blogpost', data.postId]);
           console.log(producto)
         });
+        this.isLoading = false;
       this.modal.close('Yes');
     }
     if (this.actionType === 'Edit') {
