@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient,HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ProcessHTTPMsgService } from './process-httpmsg.service';
-import {Observable, of, Subject} from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
 import { baseURL } from '../environments/baseurl';
 import { catchError } from 'rxjs/operators';
 import { Trabajador } from '../model/trabajador';
@@ -18,12 +18,35 @@ export class WorkService {
   };
   constructor(private http: HttpClient,
     private processHTTPMsgService: ProcessHTTPMsgService) {
-      this.myApiUrl = '/trabajadores/';
-     }
+    this.myApiUrl = '/trabajadores/';
+  }
 
-addEmployee(employee: Trabajador): Observable<Trabajador> {
-  return this.http.post<Trabajador>(baseURL + this.myApiUrl ,  employee, this.httpOptions)
-    .pipe(catchError(this.processHTTPMsgService.handleError));
-}
+
+  getEmployees(): Observable<Trabajador[]> {
+    return this.http.get<Trabajador[]>(baseURL + this.myApiUrl)
+      .pipe(catchError(this.processHTTPMsgService.handleError));
+  }
+
+  getEmployeeById(id: number): Observable<Trabajador> {
+    return this.http.get<Trabajador>(baseURL + this.myApiUrl + id)
+      .pipe(catchError(this.processHTTPMsgService.handleError));
+  }
+
+  addEmployee(employee: Trabajador): Observable<Trabajador> {
+    console.log('Service Employee value ' + employee.password)
+    return this.http.post<Trabajador>(baseURL + this.myApiUrl, employee, this.httpOptions)
+      .pipe(catchError(this.processHTTPMsgService.handleError));
+  }
+
+  updateEmployee(postId: number, employee: Trabajador): Observable<Trabajador> {
+    return this.http.put<Trabajador>(baseURL + this.myApiUrl + postId, JSON.stringify(employee), this.httpOptions)
+      .pipe(catchError(this.processHTTPMsgService.handleError));
+  }
+
+  deleteEmployee(postId: number): Observable<Trabajador> {
+    return this.http.delete<Trabajador>(baseURL + this.myApiUrl + postId)
+      .pipe(catchError(this.processHTTPMsgService.handleError));
+  }
+
 
 }

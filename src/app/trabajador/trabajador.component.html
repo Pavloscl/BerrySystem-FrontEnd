@@ -1,1 +1,29 @@
-<p>trabajador works!</p>
+<form>
+    <div class="form-group form-inline">
+        Nombre Trabajador: <input class="form-control ml-2" type="text" name="searchTerm"  />
+        <button  class="btn  ml-2 btn btn-outline-primary"  (click)="addItem()">Nuevo Trabajador</button>
+        <span class="ml-3">Cargando...</span>
+      </div>
+</form>
+
+<table class="table table-sm table-striped">
+  <thead>
+  <tr>
+    <th scope="col">#</th>
+    <th scope="col">Email</th>
+    <th scope="col">Password</th>
+    <th scope="col">Actions</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let employee of employees; index as i"  style=" height:15px;">
+    <th scope="row">{{ i + 1 }}</th>
+    <td>{{ employee.email  }}</td>
+    <td>{{ employee.password }}</td>
+    <td>
+      <button class="btn btn-primary btn-sm  m-2" (click)="editItem(employee.id)">Edit</button>
+      <button class="btn btn-primary btn-sm " (click)="deleteItem(employee)">Delete</button>
+  </td>
+  </tr>
+  </tbody>
+</table>

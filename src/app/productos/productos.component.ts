@@ -7,7 +7,6 @@ import { ProductService } from '../services/product.service';
 import { Params, ActivatedRoute, Router } from '@angular/router';
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 
-
 import { AddEditProductoComponent } from '../productos/add-edit-producto/add-edit-producto.component';
 
 @Component({

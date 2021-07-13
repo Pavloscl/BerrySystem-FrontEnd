@@ -1,14 +1,14 @@
 import { Injectable, PipeTransform } from '@angular/core';
-import {BehaviorSubject, Observable, of, Subject} from 'rxjs';
-import { map,catchError } from 'rxjs/operators';
-import { HttpClient,HttpHeaders } from '@angular/common/http';
+import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { baseURL } from '../environments/baseurl';
 
-import {Producto} from '../model/producto';
-import {PRODUCTOS} from '../Datos/productos';
-import {DecimalPipe} from '@angular/common';
-import {debounceTime, delay, switchMap, tap} from 'rxjs/operators';
-import {SortColumn, SortDirection} from '../tables/sortable.directive';
+import { Producto } from '../model/producto';
+import { PRODUCTOS } from '../Datos/productos';
+import { DecimalPipe } from '@angular/common';
+import { debounceTime, delay, switchMap, tap } from 'rxjs/operators';
+import { SortColumn, SortDirection } from '../tables/sortable.directive';
 import { ProcessHTTPMsgService } from './process-httpmsg.service';
 
 
@@ -44,7 +44,7 @@ function matches(product: Producto, term: string, pipe: PipeTransform) {
     || pipe.transform(product.precio_venta).includes(term);
 }
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class ProductService {
   myApiUrl!: string;
   httpOptions = {
@@ -66,7 +66,7 @@ export class ProductService {
     sortDirection: ''
   };
 
-  constructor(private pipe: DecimalPipe ,private http: HttpClient,
+  constructor(private pipe: DecimalPipe, private http: HttpClient,
     private processHTTPMsgService: ProcessHTTPMsgService) {
 
     this.myApiUrl = '/productos/';
@@ -85,28 +85,28 @@ export class ProductService {
   }
 
   getProducts(): Observable<Producto[]> {
-    return this.http.get<Producto[]>(baseURL + this.myApiUrl )
-    .pipe(catchError(this.processHTTPMsgService.handleError));
+    return this.http.get<Producto[]>(baseURL + this.myApiUrl)
+      .pipe(catchError(this.processHTTPMsgService.handleError));
   }
 
   getProductById(id: number): Observable<Producto> {
-    return this.http.get<Producto>(baseURL + this.myApiUrl + id )
-    .pipe(catchError(this.processHTTPMsgService.handleError));
+    return this.http.get<Producto>(baseURL + this.myApiUrl + id)
+      .pipe(catchError(this.processHTTPMsgService.handleError));
   }
 
-  updateProduct(postId: number, product:Producto): Observable<Producto> {
-    return this.http.put<Producto>(baseURL+ this.myApiUrl + postId, JSON.stringify(product), this.httpOptions)
+  updateProduct(postId: number, product: Producto): Observable<Producto> {
+    return this.http.put<Producto>(baseURL + this.myApiUrl + postId, JSON.stringify(product), this.httpOptions)
       .pipe(catchError(this.processHTTPMsgService.handleError));
   }
 
   addProduct(product: Producto): Observable<Producto> {
-    return this.http.post<Producto>(baseURL + this.myApiUrl ,  product, this.httpOptions)
+    return this.http.post<Producto>(baseURL + this.myApiUrl, product, this.httpOptions)
       .pipe(catchError(this.processHTTPMsgService.handleError));
   }
 
   deleteProduct(postId: number): Observable<Producto> {
     return this.http.delete<Producto>(baseURL + this.myApiUrl + postId)
-     .pipe(catchError(this.processHTTPMsgService.handleError));
+      .pipe(catchError(this.processHTTPMsgService.handleError));
   }
 
 
@@ -117,11 +117,11 @@ export class ProductService {
   get pageSize() { return this._state.pageSize; }
   get searchTerm() { return this._state.searchTerm; }
 
-  set page(page: number) { this._set({page}); }
-  set pageSize(pageSize: number) { this._set({pageSize}); }
-  set searchTerm(searchTerm: string) { this._set({searchTerm}); }
-  set sortColumn(sortColumn: SortColumn) { this._set({sortColumn}); }
-  set sortDirection(sortDirection: SortDirection) { this._set({sortDirection}); }
+  set page(page: number) { this._set({ page }); }
+  set pageSize(pageSize: number) { this._set({ pageSize }); }
+  set searchTerm(searchTerm: string) { this._set({ searchTerm }); }
+  set sortColumn(sortColumn: SortColumn) { this._set({ sortColumn }); }
+  set sortDirection(sortDirection: SortDirection) { this._set({ sortDirection }); }
 
   private _set(patch: Partial<State>) {
     Object.assign(this._state, patch);
@@ -129,8 +129,8 @@ export class ProductService {
   }
 
   private _search(): Observable<SearchResult> {
-    
-    const {sortColumn, sortDirection, pageSize, page, searchTerm} = this._state;
+
+    const { sortColumn, sortDirection, pageSize, page, searchTerm } = this._state;
 
     // 1. sort
     let productos = sort(PRODUCTOS, sortColumn, sortDirection);
@@ -141,6 +141,6 @@ export class ProductService {
 
     // 3. paginate
     productos = productos.slice((page - 1) * pageSize, (page - 1) * pageSize + pageSize);
-    return of({productos: productos, total});
+    return of({ productos: productos, total });
   }
 }

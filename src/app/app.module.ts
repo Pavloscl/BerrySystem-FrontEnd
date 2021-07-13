@@ -16,6 +16,7 @@ import { AddEditProductoComponent } from './productos/add-edit-producto/add-edit
 
 import{WorkService} from './services/work.service';
 import{ProductService} from './services/product.service';
+import { AddEditTrabajadorComponent } from './trabajador/add-edit-trabajador/add-edit-trabajador.component';
 
 
 
@@ -30,9 +31,10 @@ import{ProductService} from './services/product.service';
     ProductosComponent,
     AddEditProductoComponent,
     TrabajadorComponent,
+    AddEditTrabajadorComponent,
    
   ],
-  entryComponents: [AddEditProductoComponent],
+  entryComponents: [AddEditProductoComponent,AddEditTrabajadorComponent],
   imports: [
    
     BrowserModule,
