@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
+
 import { WorkService } from '../../services/work.service';
 import { Trabajador } from 'src/app/model/trabajador';
 
@@ -40,7 +42,8 @@ export class AddEditTrabajadorComponent implements OnInit {
   };
   constructor(public modal: NgbActiveModal,
     private employeeService: WorkService,
-    private formBuilder: FormBuilder) {
+    private formBuilder: FormBuilder,
+    private toastr: ToastrService) {
 
     this.createForm();
     this.actionType = 'Add'
@@ -64,7 +67,6 @@ export class AddEditTrabajadorComponent implements OnInit {
   }
 
   private setForm() {
-    console.log(this.postId)
     if (this.postId > 0) {
       this.actionType = 'Edit';
       this.employeeService.getEmployeeById(this.postId).subscribe(data=> (
@@ -99,7 +101,7 @@ export class AddEditTrabajadorComponent implements OnInit {
 
   onSubmit() {
     if (this.form.invalid) {
-      console.log("Debes Ingresar todos los campos")
+      this.toastr.info('Debe Ingresar Todos los Campos.','Formulario Incompleto.',{timeOut: 3500, positionClass: 'toast-top-center'});
       return
     }
     if (this.actionType === 'Add'){
@@ -107,6 +109,7 @@ export class AddEditTrabajadorComponent implements OnInit {
       this.employeeService.addEmployee(this.employee)
       .subscribe(data=>{
         this.employee= data;
+        this.toastr.success('Trabajador Agregado Correctamente','Registro Agregado');
         this.ngOnInit();
       })
       this.modal.close('Yes');
@@ -115,10 +118,12 @@ export class AddEditTrabajadorComponent implements OnInit {
       this.employee = this.form.value;
       id: this.existingEmployee.id,
       console.log(this.form.value,this.existingEmployee.id)
-    };
-     this.employeeService.updateEmployee(this.existingEmployee.id,this.employee)
+      this.employeeService.updateEmployee(this.existingEmployee.id,this.employee)
      .subscribe((data) => {
+      this.toastr.success('Trabajador Modificado Correctamente','Registro Modificado');
     });
-  this.modal.close('Yes');
+    this.modal.close('Yes');
+    };
+    
   }
 }

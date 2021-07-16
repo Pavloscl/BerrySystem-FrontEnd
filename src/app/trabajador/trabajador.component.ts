@@ -4,6 +4,7 @@ import { FormBuilder, FormControl, FormGroup, MinLengthValidator, Validators } f
 import { WorkService } from '../services/work.service';
 import { Params, ActivatedRoute, Router } from '@angular/router';
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
+import { ToastrService } from 'ngx-toastr';
 
 import { AddEditTrabajadorComponent } from '../trabajador/add-edit-trabajador/add-edit-trabajador.component';
 import { Producto } from '../model/producto';
@@ -20,7 +21,8 @@ export class TrabajadorComponent implements OnInit {
   errMess: string = "";
 
   constructor(public workService: WorkService,
-    private modalService: NgbModal) { }
+    private modalService: NgbModal,
+    private toastr: ToastrService) { }
 
   ngOnInit(): void {
     this.workService.getEmployees()
@@ -47,7 +49,9 @@ export class TrabajadorComponent implements OnInit {
     const ans = confirm('Esta Seguro de eleminar el Usuario: ' + employee.email);
     if (ans) {
       console.log(employee);
-      this.workService.deleteEmployee(employee.id).subscribe(x => this.setUsersList());
+      this.workService.deleteEmployee(employee.id)
+      .subscribe(x => this.setUsersList());
+      this.toastr.info('El Trabajador Fue Eliminado Correctamente','Registro Eliminado');
     }
 
   }

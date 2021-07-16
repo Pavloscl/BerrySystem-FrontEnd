@@ -6,6 +6,7 @@ import { NgbdSortableHeader, SortEvent } from '../tables/sortable.directive';
 import { ProductService } from '../services/product.service';
 import { Params, ActivatedRoute, Router } from '@angular/router';
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
+import { ToastrService } from 'ngx-toastr';
 
 import { AddEditProductoComponent } from '../productos/add-edit-producto/add-edit-producto.component';
 
@@ -33,7 +34,8 @@ export class ProductosComponent {
     private modalService: NgbModal,
     private formBuilder: FormBuilder,
     private avRoute: ActivatedRoute,
-    private router: Router) {
+    private router: Router,
+    private toastr: ToastrService) {
 
     this.productos$ = productService.productos$;
     this.total$ = productService.total$;
@@ -83,6 +85,7 @@ export class ProductosComponent {
       console.log(postId)
       this.productService.deleteProduct(postId).subscribe((data) => {
       //  this.loadProduct();
+      this.toastr.warning('Tu Producto Fue Eliminado Correctamente','Registro Eliminado');
         
       });
     }

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 
 import { ProductService } from '../../services/product.service';
 import { Producto } from 'src/app/model/producto';
@@ -12,7 +13,10 @@ import { Producto } from 'src/app/model/producto';
   styleUrls: ['./add-edit-producto.component.css']
 })
 export class AddEditProductoComponent implements OnInit {
-  editForm: FormGroup;
+  productForm: FormGroup;
+  submitted= false; // variable tutorial;
+  spinner= false;
+
   isLoading = false;
 
   producto: Producto;
@@ -28,7 +32,8 @@ export class AddEditProductoComponent implements OnInit {
     public modal: NgbActiveModal,
     private route: ActivatedRoute,
     private formBuilder: FormBuilder,
-    private router: Router) 
+    private router: Router,
+    private toastr: ToastrService) 
     {
     
     this.actionType = 'Add'
@@ -41,8 +46,6 @@ export class AddEditProductoComponent implements OnInit {
   }
   ngOnInit(): void {
 
-   
-    
     if (this.postId > 0) {
       this.actionType = 'Edit';
       this.productService.getProductById(this.postId)
@@ -50,50 +53,53 @@ export class AddEditProductoComponent implements OnInit {
 
           this.existingProduct = data,
           console.log(data),
-          this.editForm.controls[this.formProduct].setValue(data.descripcion),
-          this.editForm.controls[this.formPrecioCompra].setValue(data.precio_compra),
-          this.editForm.controls[this.formPrecioVenta].setValue(data.precio_venta),
-          this.editForm.controls[this.formPrecioCosecha].setValue(data.precio_cosecha)
-
+          this.productForm.controls[this.formProduct].setValue(data.descripcion),
+          this.productForm.controls[this.formPrecioCompra].setValue(data.precio_compra),
+          this.productForm.controls[this.formPrecioVenta].setValue(data.precio_venta),
+          this.productForm.controls[this.formPrecioCosecha].setValue(data.precio_cosecha)
+          
         ));
-      this.editForm.controls['producto_desc'].disable();
+       
+      this.productForm.controls['producto_desc'].disable();
     }
   }
-  get editFormData() { return this.editForm.controls; }
+  get editFormData() { return this.productForm.controls; }
 
 createForm(){
-this.editForm = this.formBuilder.group(
+this.productForm = this.formBuilder.group(
   {
-    producto_desc:['',[Validators.required]],
-    precio_compra: ['',[Validators.required]],
-    precio_venta:['',[Validators.required]],
+    producto_desc:['',[Validators.required,Validators.minLength(4)]],
+    precio_compra: ['',[Validators.required,Validators.maxLength(2)]],
+    precio_venta:['',[Validators.required,Validators.minLength(3),Validators.min(3)]],
     precio_cosecha: ['',[Validators.required]]
   }
 )}
 
-
   save() {
-
-    if (this.editForm.invalid || this.isLoading) {
+    this.submitted= true;
+    //this.isLoading=true;
+    if (this.productForm.invalid || this.isLoading) {
+      this.toastr.info('Debe Ingresar Todos los Campos requeridos.','Formulario Incompleto.',{timeOut: 3500, positionClass: 'toast-top-center'});
       return;
     }
     this.isLoading = true;
-
+  
     if (this.actionType === 'Add') {
-      console.log(this.actionType, this.postId)
       let producto: Producto = {
 
-        descripcion: this.editForm.get(this.formProduct).value,
-        precio_compra: this.editForm.get(this.formPrecioCompra).value,
-        precio_venta: this.editForm.get(this.formPrecioVenta).value,
-        precio_cosecha: this.editForm.get(this.formPrecioCosecha).value
+        descripcion: this.productForm.get(this.formProduct).value,
+        precio_compra: this.productForm.get(this.formPrecioCompra).value,
+        precio_venta: this.productForm.get(this.formPrecioVenta).value,
+        precio_cosecha: this.productForm.get(this.formPrecioCosecha).value
 
       };
+      this.spinner= true;
       this.productService.addProduct(producto)
         .subscribe((data) => {
+          this.toastr.success('Tu Producto Fue Agregado Correctamente','Registro Agregado');
           //this.router.navigate(['/blogpost', data.postId]);
-          console.log(producto)
         });
+        this.spinner=false;
         this.isLoading = false;
       this.modal.close('Yes');
     }
@@ -102,17 +108,24 @@ this.editForm = this.formBuilder.group(
       console.log(this.actionType, this.existingProduct.id)
       let producto: Producto = {
         id: this.existingProduct.id,
-        descripcion: this.editForm.get(this.formProduct).value,
-        precio_compra: this.editForm.get(this.formPrecioCompra).value,
-        precio_venta: this.editForm.get(this.formPrecioVenta).value,
-        precio_cosecha: this.editForm.get(this.formPrecioCosecha).value,
+        descripcion: this.productForm.get(this.formProduct).value,
+        precio_compra: this.productForm.get(this.formPrecioCompra).value,
+        precio_venta: this.productForm.get(this.formPrecioVenta).value,
+        precio_cosecha: this.productForm.get(this.formPrecioCosecha).value,
 
       };
       this.productService.updateProduct(producto.id, producto)
         .subscribe((data) => {
+          this.toastr.success('Tu Producto Fue Modificado Correctamente','Registro Modificado');
           //this.router.navigate([this.router.url]);
         });
       this.modal.close('Yes');
     }
   }
+
+  onReset() {
+    this.submitted = false;
+    this.productForm.reset();
+  }
+
 }
