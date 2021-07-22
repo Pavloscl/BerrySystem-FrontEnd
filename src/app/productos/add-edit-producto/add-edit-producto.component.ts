@@ -96,7 +96,9 @@ this.productForm = this.formBuilder.group(
       this.spinner= true;
       this.productService.addProduct(producto)
         .subscribe((data) => {
-          this.toastr.success('Tu Producto Fue Agregado Correctamente','Registro Agregado');
+          this.producto= data;
+          this.toastr.success(' Producto  Agregado Correctamente','Registro Agregado');
+          this.ngOnInit();
           //this.router.navigate(['/blogpost', data.postId]);
         });
         this.spinner=false;
@@ -116,10 +118,11 @@ this.productForm = this.formBuilder.group(
       };
       this.productService.updateProduct(producto.id, producto)
         .subscribe((data) => {
-          this.toastr.success('Tu Producto Fue Modificado Correctamente','Registro Modificado');
+          this.toastr.success('Producto  Modificado Correctamente','Registro Modificado');
           //this.router.navigate([this.router.url]);
+          this.modal.close('Yes');
         });
-      this.modal.close('Yes');
+     
     }
   }
 

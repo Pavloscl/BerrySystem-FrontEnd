@@ -110,14 +110,13 @@ export class AddEditTrabajadorComponent implements OnInit {
       .subscribe(data=>{
         this.employee= data;
         this.toastr.success('Trabajador Agregado Correctamente','Registro Agregado');
-        this.ngOnInit();
+        //this.ngOnInit();
       })
       this.modal.close('Yes');
     }
     if (this.actionType === 'Edit'){
       this.employee = this.form.value;
       id: this.existingEmployee.id,
-      console.log(this.form.value,this.existingEmployee.id)
       this.employeeService.updateEmployee(this.existingEmployee.id,this.employee)
      .subscribe((data) => {
       this.toastr.success('Trabajador Modificado Correctamente','Registro Modificado');

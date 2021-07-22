@@ -1,14 +1,15 @@
 import { Component, QueryList, ViewChildren, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
-import { FormBuilder, FormControl, FormGroup, MinLengthValidator, Validators } from '@angular/forms';
+import {  FormGroup } from '@angular/forms';
 import { Producto } from '../model/producto';
-import { NgbdSortableHeader, SortEvent } from '../tables/sortable.directive';
+
 import { ProductService } from '../services/product.service';
 import { Params, ActivatedRoute, Router } from '@angular/router';
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 
 import { AddEditProductoComponent } from '../productos/add-edit-producto/add-edit-producto.component';
+
 
 @Component({
   selector: 'app-productos',
@@ -17,44 +18,37 @@ import { AddEditProductoComponent } from '../productos/add-edit-producto/add-edi
 
 })
 export class ProductosComponent {
+  searchTerm: string;
+  page = 1;
+  pageSize = 10;
+  collectionSize: number;
+  currentRate = 8;
+ 
 
   productForm: FormGroup;
   actionType: string;
-  cardErrMess: string = "";
+  errMess: string = "";
   errorMessage: any;
-  Product: Producto;
-  Productos : Producto[];
+  allProductos: Producto [];
+  Productos : Producto [];
   productos$: Observable<Producto[]>;
   total$: Observable<number>;
  
-
-  @ViewChildren(NgbdSortableHeader) headers: QueryList<NgbdSortableHeader>;
-
   constructor(public productService: ProductService,
     private modalService: NgbModal,
-    private formBuilder: FormBuilder,
-    private avRoute: ActivatedRoute,
-    private router: Router,
     private toastr: ToastrService) {
-
-    this.productos$ = productService.productos$;
-    this.total$ = productService.total$;
   }
+  ngOnInit(): void {
+    this.loadProduct();
 
+  }
   loadProduct() {
-    this.productos$= this.productService.getProducts();
-  }
-
-  onSort({ column, direction }: SortEvent) {
-    // resetting other headers
-    this.headers.forEach(header => {
-      if (header.sortable !== column) {
-        header.direction = '';
-      }
+    this.productService.getProducts()
+    .subscribe((data: Producto[]) => {
+      this.collectionSize = data.length;
+      this.Productos = data;
+      this.allProductos = this.Productos; 
     });
-
-    this.productService.sortColumn = column;
-    this.productService.sortDirection = direction;
   }
 
   editItem(codigo) {
@@ -62,6 +56,7 @@ export class ProductosComponent {
     const ref = this.modalService.open(AddEditProductoComponent, { centered: true });
     ref.componentInstance.postId = codigo;
     ref.result.then((yes) => {   
+      this.loadProduct();
     },
       (cancel) => {
         
@@ -73,22 +68,27 @@ export class ProductosComponent {
     //this.router.navigateByUrl(`addProduct`);
     ref.componentInstance.postId = 0;
     ref.result.then((yes) => {
+      this.loadProduct();
     },
       (cancel) => {
       
       })
   }
 
-  delete(postId:number) {
-    const ans = confirm('Esta Seguro de eleminar el Registro N°: ' + postId);
+  delete(producto:Producto) {
+    const ans = confirm('Esta Seguro de eleminar el Producto : ' + producto.descripcion);
     if (ans) {
-      console.log(postId)
-      this.productService.deleteProduct(postId).subscribe((data) => {
-      //  this.loadProduct();
+      this.productService.deleteProduct(producto.id).subscribe((data) => {
+      this.loadProduct();
       this.toastr.warning('Tu Producto Fue Eliminado Correctamente','Registro Eliminado');
         
       });
     }
+  }
+
+  search(value: string): void {
+    this.Productos = this.allProductos.filter((val) => val.descripcion.toLowerCase().includes(value));
+    this.collectionSize = this.Productos.length;
   }
 
 }

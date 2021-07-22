@@ -18,6 +18,9 @@ import { TrabajadorComponent } from './trabajador/trabajador.component';
 import { ProductosComponent } from './productos/productos.component';
 import { AddEditProductoComponent } from './productos/add-edit-producto/add-edit-producto.component';
 import { AddEditTrabajadorComponent } from './trabajador/add-edit-trabajador/add-edit-trabajador.component';
+import { NgxPaginationModule } from 'ngx-pagination';
+import { Ng2SearchPipeModule } from 'ng2-search-filter';
+import { Ng2OrderModule } from 'ng2-order-pipe';
 
 //Services
 import{WorkService} from './services/work.service';
@@ -48,8 +51,10 @@ import{ProductService} from './services/product.service';
     ToastrModule.forRoot({
       timeOut: 2500, //10000
       preventDuplicates: true
-      
-    })
+    }),
+    NgxPaginationModule,
+    Ng2SearchPipeModule,
+    Ng2OrderModule
   ],
   providers: [
     ProductService,

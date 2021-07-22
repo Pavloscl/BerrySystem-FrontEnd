@@ -1,52 +1,43 @@
 <form>
   <div class="form-group form-inline">
-    Ingrese Producto: <input class="form-control ml-2" type="text" name="searchTerm" [(ngModel)]="productService.searchTerm" />
+    Ingrese Producto: <input class="form-control ml-2" type="text" name="searchTerm" [(ngModel)]="searchTerm"
+    (input)="search($event.target.value)" />
     <button  class="btn  ml-2 btn btn-outline-primary"  (click)="addItem()">Nuevo Producto</button>
-    <span class="ml-3" *ngIf="productService.loading$ | async">Cargando...</span>
+    <span class="ml-3" ></span>
   </div>
 
-  <table class="table table-sm table-striped">
-    <thead class="table-info">
+  <table class="table table-sm  table-striped">
+    <thead class="table-info ">
       <tr>
         <th scope="col">#</th>
-        <th scope="col" sortable="name" (sort)="onSort($event)">Producto</th>
-        <th scope="col" sortable="area" (sort)="onSort($event)">Precio Compra</th>
-        <th scope="col" sortable="population" (sort)="onSort($event)">Precio Venta</th>
+        <th scope="col" sortable="descripcion">Producto</th>
+        <th scope="col" >Precio Compra</th>
+        <th scope="col" >Precio Venta</th>
         <th scope="col">Actions</th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let product of productos$ | async" style=" height:15px;">
-        <th scope="row">{{ product.cod_producto }}</th>
+      <tr *ngFor="let producto of Productos | slice: (page-1) * pageSize : page * pageSize; index as i" style=" height:15px;">
+        <th scope="row">{{ (page -1) * pageSize + i + 1 }}</th>
+       
+        <td>{{ producto.descripcion  }}</td>
+        <td>{{ producto.precio_compra| number }}</td>
+        <td>{{ producto.precio_venta| number }}</td>
+        
         <td>
-          <ngb-highlight [result]="product.descripcion" [term]="productService.searchTerm"></ngb-highlight>
-        </td>
-        <td>
-          <ngb-highlight [result]="product.precio_compra | number" [term]="productService.searchTerm"></ngb-highlight>
-        </td>
-        <td>
-          <ngb-highlight [result]="product.precio_venta | number" [term]="productService.searchTerm"></ngb-highlight>
-        </td>
-        <td>
-          <button class="btn btn-primary btn-sm mr-2" (click)="editItem(product.id)">Edit</button>
-          <button class="btn btn-primary btn-sm" (click)="delete(product.id)">Delete</button>
+          <button class="btn btn-primary btn-sm mr-2" (click)="editItem(producto.id)">Edit</button>
+          <button class="btn btn-primary btn-sm" (click)="delete(producto)">Delete</button>
       </td>
       </tr>
-      
     </tbody>
   </table>
   <div class="d-flex justify-content-between p-2">
-    <ngb-pagination [collectionSize]="(total$ | async)!" [(page)]="productService.page" [pageSize]="productService.pageSize">
-    </ngb-pagination>
-
-    <select class="custom-select" style="width: auto" name="pageSize" [(ngModel)]="productService.pageSize">
+    <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [maxSize]="5" [boundaryLinks]="false"
+    [pageSize]="pageSize" class="d-flex justify-content-center"></ngb-pagination>
+    <select class="custom-select" style="width: auto" name="pageSize" >
       <option [ngValue]="2">2 items por pág.</option>
       <option [ngValue]="4">4 items por pág.</option>
       <option [ngValue]="6">6 items por pág.</option>
     </select>
   </div>
-
 </form>
-<ng-template #content let-modal>
-  
-</ng-template>

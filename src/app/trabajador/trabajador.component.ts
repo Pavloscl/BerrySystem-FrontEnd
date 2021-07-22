@@ -19,15 +19,18 @@ export class TrabajadorComponent implements OnInit {
 
   employees: Trabajador[];
   errMess: string = "";
+  page = 1;
+  count = 0;
+  tableSize = 10;
+  tableSizes = [5, 10, 15];
+  searchTerm: string;
 
   constructor(public workService: WorkService,
     private modalService: NgbModal,
     private toastr: ToastrService) { }
 
   ngOnInit(): void {
-    this.workService.getEmployees()
-      .subscribe(data => this.employees = data,
-        errmess => this.errMess = <any>errmess);
+    this.fetchEmployees();
 
   }
 
@@ -37,20 +40,18 @@ export class TrabajadorComponent implements OnInit {
     //this.router.navigateByUrl(`addProduct`);
     ref.componentInstance.postId = 0;
     ref.result.then((yes) => {
-      this.setUsersList();
+      this.setEmployeeList();
     },
       (cancel) => {
 
       })
   }
 
-
   deleteItem(employee: Trabajador) {
     const ans = confirm('Esta Seguro de eleminar el Usuario: ' + employee.email);
     if (ans) {
-      console.log(employee);
       this.workService.deleteEmployee(employee.id)
-      .subscribe(x => this.setUsersList());
+      .subscribe(x => this.setEmployeeList());
       this.toastr.info('El Trabajador Fue Eliminado Correctamente','Registro Eliminado');
     }
 
@@ -65,7 +66,7 @@ export class TrabajadorComponent implements OnInit {
     ref.result.then((yes) => {
       console.log("Yes Click");
 
-      this.setUsersList();
+      this.setEmployeeList();
     },
       (cancel) => {
         console.log("Cancel Click");
@@ -73,10 +74,44 @@ export class TrabajadorComponent implements OnInit {
       })
   }
 
-  private setUsersList() {
+  private setEmployeeList() {
     this.workService.getEmployees().subscribe(x => {
       this.employees = x;
     })
   }
 
+  fetchEmployees(): void {
+    this.workService.getEmployees()
+    .subscribe(data => this.employees = data,
+      errmess => this.errMess = <any>errmess);
+
+  }
+
+  onTableDataChange(event){
+    this.page = event;
+    this.fetchEmployees();
+  }  
+
+  onTableSizeChange(event): void {
+    this.tableSize = event.target.value;
+    this.page = 1;
+    this.fetchEmployees();
+  }  
+
+  Search(){
+    if(this.searchTerm==""){
+      this.ngOnInit();
+    } else{
+      this.employees= this.employees.filter(res=>{
+        return res.email.toLocaleLowerCase().match(this.searchTerm.toLocaleLowerCase())
+      })
+    }
+  }
+
+  key: string = 'id';
+  reverse:boolean = false;
+  sort(key){
+    this.key= key;
+    this.reverse= !this.reverse;
+  }
 }
