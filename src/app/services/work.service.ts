@@ -33,7 +33,6 @@ export class WorkService {
   }
 
   addEmployee(employee: Trabajador): Observable<Trabajador> {
-    console.log('Service Employee value ' + employee.password)
     return this.http.post<Trabajador>(baseURL + this.myApiUrl, employee, this.httpOptions)
       .pipe(catchError(this.processHTTPMsgService.handleError));
   }

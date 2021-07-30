@@ -36,7 +36,7 @@ export class TrabajadorComponent implements OnInit {
 
   addItem() {
     console.log();
-    const ref = this.modalService.open(AddEditTrabajadorComponent, { centered: true });
+    const ref = this.modalService.open(AddEditTrabajadorComponent, {size: 'lg',centered: true });
     //this.router.navigateByUrl(`addProduct`);
     ref.componentInstance.postId = 0;
     ref.result.then((yes) => {
@@ -48,7 +48,7 @@ export class TrabajadorComponent implements OnInit {
   }
 
   deleteItem(employee: Trabajador) {
-    const ans = confirm('Esta Seguro de eleminar el Usuario: ' + employee.email);
+    const ans = confirm('Esta Seguro de eleminar el Usuario: ' + employee.nombre);
     if (ans) {
       this.workService.deleteEmployee(employee.id)
       .subscribe(x => this.setEmployeeList());
@@ -60,7 +60,7 @@ export class TrabajadorComponent implements OnInit {
   editItem(codigo) {
     // this.router.navigateByUrl(`EditUser/${userModel.id}`);
 
-    const ref = this.modalService.open(AddEditTrabajadorComponent, { centered: true });
+    const ref = this.modalService.open(AddEditTrabajadorComponent, { size: 'lg' ,centered: true });
      ref.componentInstance.postId = codigo;
 
     ref.result.then((yes) => {
@@ -103,7 +103,7 @@ export class TrabajadorComponent implements OnInit {
       this.ngOnInit();
     } else{
       this.employees= this.employees.filter(res=>{
-        return res.email.toLocaleLowerCase().match(this.searchTerm.toLocaleLowerCase())
+        return res.nombre.toLocaleLowerCase().match(this.searchTerm.toLocaleLowerCase())
       })
     }
   }

@@ -53,7 +53,7 @@ export class ProductosComponent {
 
   editItem(codigo) {
     // this.router.navigateByUrl(`EditUser/${userModel.id}`);
-    const ref = this.modalService.open(AddEditProductoComponent, { centered: true });
+    const ref = this.modalService.open(AddEditProductoComponent, { });
     ref.componentInstance.postId = codigo;
     ref.result.then((yes) => {   
       this.loadProduct();

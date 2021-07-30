@@ -1,29 +1,80 @@
 <div class="modal-header">
-  <h4 class="modal-title" id="modal-basic-title">Profile update</h4>
+  <h4 class="modal-title" id="modal-basic-title ">Nuevo Trabajador</h4>
   <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
     <span aria-hidden="true">&times;</span>
   </button>
 </div>
-<div class="modal-body">
-  <form  novalidate id="contactForm" [formGroup]="form" (ngSubmit)="onSubmit()" >
-    <div class="form-group">
-      <label for="exampleInputEmail1">Email address</label>
-      <input type="email" class="form-control" formControlName="email" aria-describedby="emailHelp" placeholder="Enter email" >
-      <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
-      <div *ngIf="formErrors.email" class="alert-danger"> <span>{{formErrors.email}}</span></div>
+<div class="modal-body m-3 ">
+  <form  [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="form-row">
+      <div class="form-group col-6">
+        <label>Rut</label>
+        <input class="form-control" formControlName="rut" aria-describedby="emailHelp" placeholder="" [ngClass]="{ 'is-invalid': submitted && f.rut.errors }">
+        <div *ngIf="submitted && f.rut.errors" class="invalid-feedback">
+          <div *ngIf="f.rut.errors.required">Ingrese Rut</div>
+          <div *ngIf="f.rut.errors.minlength">El Rut debe tener Mínimo 9 dígitos</div>
+      </div>
+      </div>
+      <div class="form-group col-6">
+        <label>Nombres</label>
+        <input type="text" class="form-control"  formControlName="nombre" [ngClass]="{ 'is-invalid': submitted && f.nombre.errors }" ng-pattern="/^-?[0-9][^\.]*$/">
+        <div *ngIf="submitted && f.nombre.errors" class="invalid-feedback">
+          <div *ngIf="f.nombre.errors.required">Ingrese Nombre</div>
+      </div>
+      </div>
     </div>
-    <div class="form-group">
-      <label for="exampleInputPassword1">Password</label>
-      <input type="password" class="form-control" formControlName="password"  placeholder="Password" >
-      <div *ngIf="formErrors.password" class="alert-danger"> <span>{{formErrors.password}}</span></div>
+    <div class="form-row">
+      <div class="form-group col-6">
+        <label>Apellido Paterno</label>
+        <input class="form-control" type="text" formControlName="ap_paterno" [ngClass]="{ 'is-invalid': submitted && f.ap_paterno.errors }">
+        <div *ngIf="submitted && f.ap_paterno.errors" class="invalid-feedback">
+          <div *ngIf="f.ap_paterno.errors.required">Ingrese Apellido Paterno</div>
+      </div>
+      </div>
+      <div class="form-group col-6">
+        <label>Apellido Materno</label>
+        <input class="form-control" type="text" formControlName="ap_materno" [ngClass]="{ 'is-invalid': submitted && f.ap_materno.errors }">
+        <div *ngIf="submitted && f.ap_materno.errors" class="invalid-feedback">
+          <div *ngIf="f.ap_materno.errors.required">Ingrese Apellido Materno</div>
+      </div>
+      </div>
     </div>
-    <div class="form-check">
-      <input type="checkbox" class="form-check-input" id="exampleCheck1">
-      <label class="form-check-label" for="exampleCheck1">Check me out</label>
+    <div class="form-row">
+      <div class="form-group col-2">
+        <label>Sector</label>
+        <input class="form-control" formControlName="id_sector" type="number" [ngClass]="{ 'is-invalid': submitted && f.id_sector.errors }">
+        <div *ngIf="submitted && f.id_sector.errors" class="invalid-feedback">
+          <div *ngIf="f.id_sector.errors.required">Ingrese Sector</div>
+      </div>
+      </div>
+      <div class="form-group col-5">
+        <label>Telefono</label>
+        <input class="form-control" formControlName="telefono" type="number" [ngClass]="{ 'is-invalid': submitted && f.telefono.errors }">
+        <div *ngIf="submitted && f.telefono.errors" class="invalid-feedback">
+          <div *ngIf="f.telefono.errors.required">Ingrese Telefono</div>
+      </div>
+      </div>
+      <div class="form-group col-5">
+        <label for="exampleInputEmail1">Email address</label>
+        <input type="email" class="form-control" formControlName="email" [ngClass]="{ 'is-invalid': submitted && f.email.errors }">
+        <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+        <div *ngIf="submitted && f.email.errors" class="invalid-feedback">
+          <div *ngIf="f.email.errors.required">Ingrese Email</div>
+          <div *ngIf="f.email.errors.email">Debe Ingresar un Email Valido</div>
+      </div>
+      </div>
     </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
-    <div class="modal-footer">
-      <button id="submit"   type="submit" class="btn btn-outline-dark">Save</button>
+    <div class="form-row">
+      <div class="form-group col-5">
+        <input class="form-control" formControlName="fecha_ingreso" type="date">
+      </div>
+      <div class="form-group col-5">
+        <input type="email" class="form-control" formControlName="fecha_baja" type="date"  >
+      </div>
+    </div>
+    <div class="modal-footer ">
+      <button type="submit" class="btn btn-primary">Submit</button>
+      <button type="button" class="btn btn-outline-dark" (click)="modal.dismiss('Cross click')">Cancel</button>
     </div>
   </form>
 </div>

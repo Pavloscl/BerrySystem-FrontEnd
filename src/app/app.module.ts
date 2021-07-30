@@ -7,7 +7,10 @@ import { AppRoutingModule } from './app-routing/app-routing.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
 import {DecimalPipe} from '@angular/common';
+import { DatePipe } from '@angular/common'
+
 import { baseURL } from './environments/baseurl'
 import { ToastrModule } from 'ngx-toastr';
 
@@ -59,6 +62,7 @@ import{ProductService} from './services/product.service';
   providers: [
     ProductService,
     DecimalPipe,
+    DatePipe,
     {provide: 'baseURL', useValue: baseURL},
     WorkService
     

@@ -3,8 +3,10 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 
+
 import { WorkService } from '../../services/work.service';
 import { Trabajador } from 'src/app/model/trabajador';
+import { DatePipe } from '@angular/common'
 
 @Component({
   selector: 'app-add-edit-trabajador',
@@ -13,99 +15,100 @@ import { Trabajador } from 'src/app/model/trabajador';
 })
 export class AddEditTrabajadorComponent implements OnInit {
   employee: Trabajador;
-  //employeeCopy: Trabajador;
   errMess: string = "";
+  submitted = false;
 
   form: FormGroup;
   actionType: string;
   existingEmployee: Trabajador;
   postId: number;
-  formCorreo: string;
-  formPassword: string;
 
-  formErrors: { [key: string]: any } = {
-    'password': '',
-    'email': '',
-  };
+  formRut: string;
+  formNombre: string;
+  formApPaterno:string;
+  formApMaterno:string;
+  formIdSector: string;
+  formFono: string;
+  formEmail: string;
+  formFechaIngreso: string;
+  formFechaBaja: string;
 
-  validationMessages: { [Key: string]: any } = {
-    'password': {
-      'required': 'Password is required.',
-      'minlength': 'Password  must be at least 2 characters long.',
-      'maxlength': 'Password cannot be more than 25 characters long.'
-    },
-    'email': {
-      'required': 'Email is required.',
-      'minlength': 'Email must be at least 2 characters long.',
-      'maxlength': 'Email cannot be more than 25 characters long.'
-    }
-  };
+  date:Date;
+
   constructor(public modal: NgbActiveModal,
     private employeeService: WorkService,
     private formBuilder: FormBuilder,
-    private toastr: ToastrService) {
+    private toastr: ToastrService,
+    public datepipe: DatePipe) {
 
     this.createForm();
     this.actionType = 'Add'
-    this.formCorreo='email';
-    this.formPassword='password';
+    this.formRut='rut';
+    this.formNombre='nombre';
+    this.formApPaterno='ap_paterno';
+    this.formApMaterno='ap_materno';
+    this.formIdSector='id_sector';
+    this.formFono='telefono';
+    this.formEmail='email';
+    this.formFechaBaja='fecha_baja';
+    this.formFechaIngreso='fecha_ingreso'
   }
 
   ngOnInit(): void {
-    this.setForm();
 
+    this.setForm(); 
   }
+  
+  // convenience getter for easy access to form fields
+  get f() { return this.form.controls; }
+
   createForm() {
     this.form = this.formBuilder.group({
-      password: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(25)]],
-      email: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(25)]]
+      rut:['',[Validators.required,Validators.minLength(9)]],
+      nombre:['',[Validators.required,Validators.minLength(3),Validators.maxLength(10)]],
+      ap_paterno:['',[Validators.required]],
+      ap_materno:['',[Validators.required]],
+      id_sector:['',[Validators.required]],
+      telefono:['',[Validators.required]],
+      email: ['', [Validators.required, Validators.email]],
+      fecha_ingreso:'',
+      fecha_baja:''
+     // dob: ['', [Validators.required, Validators.pattern(/^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$/)]],  //patron fecha nacimiento
     });
-    this.form.valueChanges
-      .subscribe(data => this.onValueChanged(data));
-    console.log('Value form Changes  ' + this.form.valueChanges)
-    this.onValueChanged(); // (re)set validation messages now
+    
   }
 
   private setForm() {
     if (this.postId > 0) {
       this.actionType = 'Edit';
       this.employeeService.getEmployeeById(this.postId).subscribe(data=> (
+       
         this.existingEmployee=data,
-        this.form.controls[this.formCorreo].setValue(data.email),
-        this.form.controls[this.formPassword].setValue(data.password)
-        ))
-    }
-  }
-
-
-  onValueChanged(data?: any) {
-    if (!this.form) { return; }
-    const form = this.form;
-
-    for (const field in this.formErrors) {
-      if (this.formErrors.hasOwnProperty(field)) {
-        // clear previous error message (if any)
-        this.formErrors[field] = '';
-        const control = form.get(field);
-        if (control && control.dirty && !control.valid) {
-          const messages = this.validationMessages[field];
-          for (const key in control.errors) {
-            if (control.errors.hasOwnProperty(key)) {
-              this.formErrors[field] += messages[key] + ' ';
-            }
-          }
-        }
-      }
+        this.form.controls[this.formRut].setValue(data.rut),
+        this.form.controls[this.formNombre].setValue(data.nombre),
+        this.form.controls[this.formApPaterno].setValue(data.ap_paterno),
+        this.form.controls[this.formApMaterno].setValue(data.ap_materno),
+        this.form.controls[this.formIdSector].setValue(data.id_sector),
+        this.form.controls[this.formFono].setValue(data.telefono),
+        this.form.controls[this.formEmail].setValue(data.email),
+        this.form.controls[this.formFechaIngreso].setValue(data.fecha_ingreso.toLocaleString()),
+        this.form.controls[this.formFechaBaja].setValue(data.fecha_baja)
+        ));
+        this.form.controls['rut'].disable();
     }
   }
 
   onSubmit() {
+    this.submitted = true;
     if (this.form.invalid) {
       this.toastr.info('Debe Ingresar Todos los Campos.','Formulario Incompleto.',{timeOut: 3500, positionClass: 'toast-top-center'});
       return
     }
     if (this.actionType === 'Add'){
       this.employee = this.form.value;
+      this.employee.fecha_ingreso=this.datepipe.transform(new Date(), 'yyyy-MM-dd');
+      this.employee.fecha_baja=null;
+      
       this.employeeService.addEmployee(this.employee)
       .subscribe(data=>{
         this.employee= data;
@@ -116,6 +119,7 @@ export class AddEditTrabajadorComponent implements OnInit {
     }
     if (this.actionType === 'Edit'){
       this.employee = this.form.value;
+      this.employee.rut= this.form.get(this.formRut).value
       id: this.existingEmployee.id,
       this.employeeService.updateEmployee(this.existingEmployee.id,this.employee)
      .subscribe((data) => {

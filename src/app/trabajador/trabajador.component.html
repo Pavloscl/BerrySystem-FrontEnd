@@ -10,8 +10,11 @@
   <thead class="table-info">
   <tr>
     <th (click)="sort('id')">Id&nbsp;<i class="fa fa-sort"></i></th>
-    <th (click)="sort('email')">Email</th>
-    <th scope="col" (click)="sort('password')">Password</th>
+    <th (click)="sort('email')">Rut</th>
+    <th scope="col" (click)="sort('password')">Nombre</th>
+    <th scope="col" (click)="sort('password')">Apellido</th>
+    <th scope="col" (click)="sort('password')">Sector</th>
+    <th scope="col" (click)="sort('password')">Fecha Ingreso</th>
     <th scope="col">Actions</th>
   </tr>
   </thead>
@@ -23,8 +26,11 @@
   };
 let i = index" [class.active]="i == currentIndex"  style="height:10px;">
     <td >{{ employee.id }}</td>
-    <td>{{ employee.email  }}</td>
-    <td>{{ employee.password }}</td>
+    <td>{{ employee.rut  }}</td>
+    <td>{{ employee.nombre }}</td>
+    <td>{{ employee.ap_paterno }}</td>
+    <td>{{ employee.id_sector }}</td>
+    <td>{{ employee.fecha_ingreso|date:'MM/dd/yyyy'}}</td>
     <td>
       <button class="btn btn-primary btn-sm  mr-1" (click)="editItem(employee.id)">Edit</button>
       <button class="btn btn-primary btn-sm " (click)="deleteItem(employee)">Delete</button>
